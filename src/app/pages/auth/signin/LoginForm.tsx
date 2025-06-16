@@ -35,7 +35,7 @@ const LoginForm = () => {
             toast.success("Login success");
             window.location.reload();
         } else {
-            toast.error(error.err?.message);
+            toast.error("Invalid Login Email or Password");
         }
         setLoading(false);
     };

@@ -2,12 +2,13 @@ import { connectToDatabase } from "@/src/lib/utils";
 import { UserProfile } from "@/src/models/UserProfileModel";
 import { NextResponse } from "next/server";
 
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////////////////////
+
 export async function POST(req: Request) {
   try {
     const { username } = await req.json();
-console.log('====================================');
-console.log(username);
-console.log('====================================');
     if (!username) {
       return NextResponse.json(
         { error: "Username is required" },
