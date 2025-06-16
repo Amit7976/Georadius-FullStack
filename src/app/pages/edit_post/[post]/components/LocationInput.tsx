@@ -123,7 +123,7 @@ export default function LocationInput({
                 return;
             }
 
-            const API_KEY = process.env.OLA_API_KEY;
+            const API_KEY = "txBOleR58lHkyz1Aio6WJc5zPW223xIabWR3Yd4k";
             const url = `https://api.olamaps.io/places/v1/autocomplete?input=${encodeURIComponent(
                 query
             )}&api_key=${API_KEY}`;

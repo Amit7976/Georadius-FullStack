@@ -1,5 +1,5 @@
 export const getAddress = async (): Promise<string> => {
-  const API_KEY = process.env.OLA_API_KEY;
+  const API_KEY = "txBOleR58lHkyz1Aio6WJc5zPW223xIabWR3Yd4k";
 
   /////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -58,7 +58,7 @@ export const getAddress = async (): Promise<string> => {
 export const getCoordinates = async (
   address: string
 ): Promise<{ latitude: number; longitude: number } | null> => {
-  const API_KEY = process.env.OLA_API_KEY;
+  const API_KEY = "txBOleR58lHkyz1Aio6WJc5zPW223xIabWR3Yd4k";
 
   try {
     const url = `https://api.olamaps.io/places/v1/geocode?address=${encodeURIComponent(

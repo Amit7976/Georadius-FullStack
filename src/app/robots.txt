@@ -1,4 +1,7 @@
 User-Agent: *
+Disallow: /pages/edit_post
+Disallow: /pages/others/report_an_issue
+
 Allow: /
 
 Sitemap: https://georadiusnews.vercel.app/sitemap.xml

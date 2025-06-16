@@ -7,6 +7,13 @@ import MainContent from './MainContent';
 /////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
+export const metadata = {
+  title: "Update Profile | Geo Radius News",
+  description: "Update your profile details to personalize your local news experience.",
+};
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////
+
 export default async function page() {
 
   const session = await auth();

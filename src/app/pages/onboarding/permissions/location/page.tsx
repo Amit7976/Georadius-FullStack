@@ -7,6 +7,13 @@ import { redirect } from "next/navigation";
 /////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
+export const metadata = {
+  title: "Enable Location | Geo Radius News",
+  description: "Allow location access to discover and share news from your neighborhood in real-time.",
+};
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////
+
 export default async function page() {
   const cookieStore = await cookies();  
   // const NPS = cookieStore.get("NPS")?.value;

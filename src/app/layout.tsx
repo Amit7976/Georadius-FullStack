@@ -30,7 +30,7 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "Geo Radius News — HyperLocal Community-Powered News Application",
   description:
-    "Get real-time HyperLocal news updates from your neighborhood. Geo Radius News lets users share, verify, and access updates based on location — for the people, by the people.",
+    "Get real-time HyperLocal news updates from your neighborhood. GeoRadiusNews lets users share, verify, and access local updates — for the people, by the people.",
   keywords: [
     "local news app",
     "HyperLocal news",
@@ -63,7 +63,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "Geo Radius News — HyperLocal Community-Powered News Application",
     description:
-      "Get real-time HyperLocal news updates from your neighborhood. Geo Radius News lets users share, verify, and access updates based on location — for the people, by the people.",
+      "Get real-time HyperLocal news updates from your neighborhood. GeoRadiusNews lets users share, verify, and access local updates — for the people, by the people.",
     url: "https://georadiusnews.vercel.app",
     siteName: "Geo Radius News",
     images: [
@@ -81,7 +81,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "Geo Radius News — HyperLocal Community-Powered News Application",
     description:
-      "Get real-time HyperLocal news updates from your neighborhood. Geo Radius News lets users share, verify, and access updates based on location — for the people, by the people.",
+      "Get real-time HyperLocal news updates from your neighborhood. GeoRadiusNews lets users share, verify, and access local updates — for the people, by the people.",
     images: ["https://georadiusnews.vercel.app/opengraph-image.png"], // Replace with actual image
   },
 };
@@ -120,7 +120,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
               "name": "Geo Radius News — HyperLocal Community-Powered News Application",
               "url": "https://georadiusnews.vercel.app",
               "description":
-                "Get real-time HyperLocal news updates from your neighborhood. Geo Radius News lets users share, verify, and access updates based on location — for the people, by the people.",
+                "Get real-time HyperLocal news updates from your neighborhood. GeoRadiusNews lets users share, verify, and access local updates — for the people, by the people.",
               "inLanguage": "en",
               "foundingDate": "2025-06-05",
               "publisher": {

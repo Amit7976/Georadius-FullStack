@@ -3,11 +3,20 @@ import { redirect } from "next/navigation";
 import { auth } from "@/src/auth";
 import MainContent from "./MainContent";
 import { t } from "@/src/helpers/i18n";
+import type { Metadata } from "next";
 
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////////////////////
 
+
+export const metadata: Metadata = {
+  title: "Edit Post | Geo Radius News",
+  description:
+    "Make changes to your previously submitted post on Geo Radius News. Keep your neighborhood updated with the most accurate and timely information.",
+};
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////
 
 export default async function page() {
 

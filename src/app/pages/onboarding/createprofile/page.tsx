@@ -8,6 +8,13 @@ import MainContent from "./MainContent";
 /////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
+export const metadata = {
+  title: "Create Profile | Geo Radius News",
+  description: "Set up your account and start sharing or reading hyperlocal news in your area.",
+};
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////
+
 export default async function Home() {
   
   const session = await auth();
