@@ -75,7 +75,7 @@ export async function POST(req: Request) {
           _id: 1,
           title: 1,
           userId: 1,
-          // description: 1,
+          description: 1,
           location: 1,
           longitude: 1,
           latitude: 1,

@@ -130,7 +130,7 @@ export async function POST(req: NextRequest) {
           _id: 1,
           title: 1,
           userId: 1,
-          // description: 1,
+          description: 1,
           location: 1,
           longitude: 1,
           latitude: 1,

@@ -62,7 +62,7 @@ const NewsPost = ({ news, onHide, fullDescription, currentLoginUsername }: { new
     /////////////////////////////////////////////////////////////////////////////////////////////////////
 
     const handleEditClick = () => {
-        sessionStorage.setItem("editNewsData", JSON.stringify(news));
+        // sessionStorage.setItem("editNewsData", JSON.stringify(news));
         router.push(`/pages/edit_post/${news._id}`);
     };
 
