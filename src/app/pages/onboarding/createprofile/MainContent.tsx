@@ -8,6 +8,7 @@ import { t } from "@/src/helpers/i18n";
 import { FormDataType } from "@/src/helpers/types";
 import { profileSchema } from "@/src/helpers/zodSchema";
 import { zodResolver } from "@hookform/resolvers/zod";
+import debounce from "lodash.debounce";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import React, { useState } from "react";
@@ -87,19 +88,22 @@ export default function MainContent() {
     /////////////////////////////////////////////////////////////////////////////////////////////////////
 
     const [isSubmitting, setIsSubmitting] = useState(false);
+    const [isAvailable, setIsAvailable] = useState<null | boolean>(null);
 
     /////////////////////////////////////////////////////////////////////////////////////////////////////
 
     const onSubmit = async (data: FormDataType) => {
         if (isSubmitting) return; // Prevent multiple clicks
+
+        // 🛑 Check username availability before submitting
+        if (isAvailable === false) {
+            toast.error("Choose a different username");
+            return;
+        }
+
         setIsSubmitting(true);
 
         try {
-            // console.log("====================================");
-            // console.log("Form submission started...");
-            // console.log("====================================");
-
-            // console.log("Received Form Data:", data);
             const formData = new FormData();
             formData.append("username", data.username);
             formData.append("fullName", data.fullName);
@@ -107,42 +111,25 @@ export default function MainContent() {
             formData.append("dob", data.dob);
             formData.append("location", data.location);
             formData.append("bio", data.bio);
-            // console.log("Basic fields appended!");
-
-            /////////////////////////////////////////////////////////////////////////////////////////////////////
 
             if (data.profileImage instanceof File) {
-                // console.log("Profile Image detected, appending...");
                 formData.append("profileImage", data.profileImage);
-
-                // console.log("====================================");
-                // console.log("Sending data to API...");
-                // console.log("====================================");
-
-                // console.log("📝 Final FormData Entries:", [...formData.entries()]);
 
                 const response = await fetch("/api/userProfile/profile", {
                     method: "POST",
                     body: formData,
                 });
-                const result: { error?: string } = await response.json();
-                // console.log("API Response Received:", result);
 
-                /////////////////////////////////////////////////////////////////////////////////////////////////////
+                const result: { error?: string } = await response.json();
 
                 if (!response.ok) {
                     console.error("API Error:", result.error);
                     throw new Error(result.error || "Failed to update profile");
                 }
 
-                /////////////////////////////////////////////////////////////////////////////////////////////////////
-
-                // console.log("Profile Created successfully!", result);
                 toast.success("Profile Created successfully!");
                 router.replace("/pages/onboarding/interest");
-
             } else {
-                // console.log("No valid profile image provided.");
                 toast.warning("No valid profile image provided.");
             }
         } catch (error) {
@@ -152,6 +139,46 @@ export default function MainContent() {
             setIsSubmitting(false);
         }
     };
+    
+    /////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+
+    const checkUsername = debounce(async (value: string) => {
+        if (!value.trim()) {
+            setIsAvailable(null);
+            return;
+        }
+
+        try {
+            const res = await fetch("/api/search/username", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ username: value }),
+            });
+
+            const data = await res.json();
+
+            if (!res.ok) {
+                console.error("API error:", data.error);
+                setIsAvailable(null);
+                return;
+            }
+
+            setIsAvailable(data.available);
+        } catch (err) {
+            console.error("❌ Username check failed:", err);
+            setIsAvailable(null);
+        }
+    }, 500);
+
+    /////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const value = e.target.value.replace(/\s/g, "");
+        setValue("username", value); // React Hook Form update
+        checkUsername(value);
+    };    
 
     /////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -162,7 +189,7 @@ export default function MainContent() {
                 <div className="border border-gray-200 w-full p-4 rounded-lg flex items-center gap-6">
 
                     {/* <Label className={"h-14 border-2 focus-visible:ring-green-500 focus-visible:outline-0 focus-visible:border-0"}>Profile Image</Label> */}
-                    <div className="relative flex-1 w-32 h-32 border-2 border-dashed rounded-xl active:scale-95">
+                    <div className={`relative flex-1 w-32 h-32 border-2 border-dashed rounded-xl active:scale-95 overflow-hidden ${errors.profileImage? 'border-red-500':'border-gray-400'}`}>
                         {!imagePreview && (
                             <>
                                 <Image loading="lazy"
@@ -188,30 +215,36 @@ export default function MainContent() {
                                 className="w-full h-32 rounded-xl object-cover"
                             />
                         )}
-                        {errors.profileImage && (
-                            <p className="text-red-500">{errors.profileImage.message}</p>
-                        )}
                     </div>
 
                     {/* Username */}
                     <div className="rounded-lg space-y-2 flex-2">
-                        <Label className={"text-sm text-gray-600 dark:text-gray-400 font-medium"}>{t("username")}</Label>
+                        <Label className="text-sm text-gray-600 dark:text-gray-400 font-medium">
+                            {t("username")}
+                        </Label>
                         <Input
-                            className={"border-0 border-b-2 focus-visible:ring-0 rounded-none rounded-t-lg text-base font-medium p-0 focus-visible:border-green-500 focus-visible:border-b-4 focus-visible:outline-0"}
-                            type={"text"}
+                            className={`border-0 border-b-2 focus-visible:ring-0 rounded-none rounded-t-lg text-base font-medium p-2 focus-visible:outline-0 ${isAvailable === null
+                                ? ""
+                                : isAvailable
+                                    ? "border-green-500 focus-visible:border-green-500"
+                                    : "border-red-500 focus-visible:border-red-500"
+                                }`}
+                            type="text"
                             {...register("username")}
                             autoComplete="username"
                             placeholder={t("enterUsername")}
-                            onInput={(e: React.FormEvent<HTMLInputElement>) => {
-                                const input = e.currentTarget;
-                                input.value = input.value.replace(/\s/g, "");
-                            }}
+                            onChange={handleChange}
                         />
                         {errors.username && (
                             <p className="text-red-500">{errors.username.message}</p>
                         )}
+                        {isAvailable === false && (
+                            <p className="text-red-500 text-xs">Username is taken</p>
+                        )}
+                        {isAvailable === true && (
+                            <p className="text-green-600 text-xs">Username is available</p>
+                        )}
                     </div>
-
                 </div>
 
                 {/* Full Name */}

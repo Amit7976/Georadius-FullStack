@@ -35,7 +35,7 @@ const LoginForm = () => {
             toast.success("Login success");
             window.location.reload();
         } else {
-            toast.error("Login failed! " + error.err);
+            toast.error(error.err?.message);
         }
         setLoading(false);
     };

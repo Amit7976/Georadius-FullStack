@@ -22,7 +22,6 @@ const SignUpForm = () => {
         <>
             <form
                 action={async (formData) => {
-
                     setLoading(true);
                     // Extract form data
                     const fullname = formData.get("fullname") as string;
@@ -51,6 +50,7 @@ const SignUpForm = () => {
 
                     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+
                     const error = await credentialsSignUp(fullname, email, password);
 
                     if (!error) {
@@ -58,7 +58,7 @@ const SignUpForm = () => {
 
                         router.refresh();
                     } else {
-                        toast.error("Registration failed! " + error);
+                        toast.error(error);
                     }
                     
                     setLoading(false);

@@ -1,6 +1,7 @@
 User-Agent: *
 Disallow: /pages/edit_post
 Disallow: /pages/others/report_an_issue
+Disallow: /pages/onboarding/createprofile
 
 Allow: /
 

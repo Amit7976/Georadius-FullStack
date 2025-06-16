@@ -17,7 +17,7 @@ const credentialsSignUp = async (
     await connectToDatabase();
   } catch (error) {
     console.error("Failed to connect to the database:", error);
-    throw new Error("Internal server error");
+    return "Internal server error! Please try again later";
   }
 
   ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -38,7 +38,7 @@ const credentialsSignUp = async (
 
   if (candidate) {
     // // console.log("4");
-    throw new Error("Email already registered");
+    return ("Email already registered");
   }
   // // console.log("5");
 

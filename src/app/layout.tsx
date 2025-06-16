@@ -153,11 +153,10 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <div className="lg:hidden">
           <ThemeHandler>
             <main>
-              <Toaster richColors position="top-right" />
               {children}
               <BottomWrapper />
             </main>
-            <Toaster richColors position="top-center" expand={false} closeButton />
+            <Toaster richColors position="bottom-center" expand={false} className="w-40" />
           </ThemeHandler>
         </div>
         <div className="hidden lg:flex items-center justify-center h-screen w-full dark:bg-neutral-900 px-10">
