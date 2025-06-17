@@ -1,4 +1,5 @@
 "use client";
+import { Drawer, DrawerTrigger } from "@/components/ui/drawer";
 import {
     Select,
     SelectContent,
@@ -6,17 +7,22 @@ import {
     SelectTrigger,
     SelectValue,
 } from "@/components/ui/select";
+import { PlaceholderSearchPost } from "@/src/components/home/Placeholder";
 import ImageSlider from "@/src/components/ImageSlider";
-import { LoaderLink } from "@/src/components/loaderLinks";
-import SearchInput from "@/src/components/SearchInput";
+import Post from "@/src/components/Post";
 import { formatTimeAgo } from "@/src/helpers/formatTimeAgo";
 import { t } from "@/src/helpers/i18n";
+import { PostType } from "@/src/helpers/types";
+import { useCallback, useEffect, useState } from "react";
+import "swiper/css";
+import { useGeolocation } from "../../hooks/useGeolocation";
+
+import { PlaceholderSearchUser } from "@/src/components/home/Placeholder";
+import { LoaderLink } from "@/src/components/loaderLinks";
+import SearchInput from "@/src/components/SearchInput";
+import { User } from "@/src/helpers/types";
 import Image from "next/image";
 import { useSearchParams } from "next/navigation";
-import { useCallback, useEffect, useState } from "react";
-import { useGeolocation } from "../../hooks/useGeolocation";
-import { Post, User } from "@/src/helpers/types";
-import { PlaceholderSearchPost, PlaceholderSearchUser } from "@/src/components/home/Placeholder";
 
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -28,10 +34,11 @@ export default function SearchResultsClient() {
     const query = searchParams.get("q") || "";
     const [radius, setRadius] = useState("50");
     const [searchType, setSearchType] = useState("post");
-    const [results, setResults] = useState<User[] | Post[]>([]);
-    const [expandedDescriptions, setExpandedDescriptions] = useState<string[]>([]);
+    const [results, setResults] = useState<User[] | PostType[]>([]);
+    // const [expandedDescriptions, setExpandedDescriptions] = useState<string[]>([]);
     const [loading, setLoading] = useState(false);
     const location = useGeolocation();
+    const [openDrawerId, setOpenDrawerId] = useState<string | null>(null);
 
     /////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -80,15 +87,35 @@ export default function SearchResultsClient() {
 
     /////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    const toggleDescription = (postId: string) => {
-        setExpandedDescriptions((prev) =>
-            prev.includes(postId)
-                ? prev.filter((id) => id !== postId)
-                : [...prev, postId]
-        );
+    useEffect(() => {
+        const onPopState = () => {
+            if (openDrawerId) {
+                setOpenDrawerId(null);
+            }
+        };
+
+        window.addEventListener("popstate", onPopState);
+        return () => window.removeEventListener("popstate", onPopState);
+    }, [openDrawerId]);
+
+
+    /////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    const handleDrawerOpen = (postId: string) => {
+        history.pushState({ drawerOpen: true }, "", window.location.href);
+        setOpenDrawerId(postId);
     };
 
     /////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    const handleDrawerClose = () => {
+        setOpenDrawerId(null);
+        history.back();
+    };
+
+    /////////////////////////////////////////////////////////////////////////////////////////////////////
+
 
     return (
         <div className="p-4">
@@ -152,7 +179,7 @@ export default function SearchResultsClient() {
                             ) {
                                 const user = result as User;
                                 return (
-                                    <LoaderLink href={"/" + user.username} key={user._id} className="flex items-center py-2 mt-2">
+                                    <LoaderLink href={"/" + user.username} target={"_blank"} key={user._id} className="flex items-center py-2 mt-2">
                                         <div className="w-16 shrink-0">
                                             <Image
                                                 width={100}
@@ -184,28 +211,31 @@ export default function SearchResultsClient() {
                     <div className="my-6">
                         <div className="divider-y-2 border-gray-200 mb-4">
                             <div className="flex flex-col gap-6">
-                                {results.filter((result): result is Post => "title" in result).map((post) => (
-                                    <LoaderLink href={"/search/results/" + post._id} key={post._id} className="py-2 space-y-2 text-start">
-                                        <p className="text-gray-500 text-xs">{formatTimeAgo(post.updatedAt)}</p>
-                                        <h4 className="font-semibold text-lg leading-5">{post.title}</h4>
-                                        <p className="text-xs text-gray-500 leading-5 mt-1">{post.location}</p>
+                                {results.filter((result): result is PostType => "title" in result).map((post,index) => (
+                                     <Drawer key={index} Drawer open={openDrawerId === post._id} onOpenChange={(isOpen: boolean) => {
+                                        if (isOpen) handleDrawerOpen(post._id);
+                                        else handleDrawerClose();
+                                    }}>
+                                        <DrawerTrigger asChild>
+                                            <div key={post._id} className="py-2 space-y-2 text-start active:scale-95 duration-300">
+                                                <p className="text-gray-500 text-xs">{formatTimeAgo(post.updatedAt)}</p>
+                                                <p className="text-xs text-gray-500 leading-5 mt-1">{post.location}</p>
 
-                                        {Array.isArray(post.images) && post.images.length > 0 && (
-                                            <div className="rounded-2xl overflow-hidden mt-4 my-2">
-                                                <ImageSlider images={post.images} height={250} />
+                                                {Array.isArray(post.images) && post.images.length > 0 && (
+                                                    <div className="rounded-2xl overflow-hidden mt-4 my-2">
+                                                        <ImageSlider images={post.images} height={250} />
+                                                    </div>
+                                                )}
+
+                                                <div className="flex-6 mt-4">
+                                                    <h4 className="font-semibold text-lg">{post.title}</h4>
+                                                </div>
                                             </div>
+                                        </DrawerTrigger>
+                                        {openDrawerId === post._id && (
+                                            <Post postId={post._id} />
                                         )}
-
-                                        <div className="flex-6 mt-4">
-                                            <p
-                                                className={`border-l-4 border-green-500 pl-3 py-0.5 text-sm text-gray-800 dark:text-gray-400 ${expandedDescriptions.includes(post._id) ? "" : "line-clamp-6"
-                                                    }`}
-                                                onClick={() => toggleDescription(post._id)}
-                                            >
-                                                {post.description}
-                                            </p>
-                                        </div>
-                                    </LoaderLink>
+                                    </Drawer>
                                 ))}
                             </div>
                         </div>

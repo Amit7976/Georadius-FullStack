@@ -44,7 +44,7 @@ function MainContent() {
 
         fetchNearbyPosts(location.lat, location.lng);
     }, []);
-
+    
     /////////////////////////////////////////////////////////////////////////////////////////////////////
 
     if (error) return <p className="text-red-500 text-center">{error}</p>;

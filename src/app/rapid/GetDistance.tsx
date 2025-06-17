@@ -26,10 +26,10 @@ function GetDistance({ lat, lng, location }: { lat: number, lng: number, locatio
     /////////////////////////////////////////////////////////////////////////////////////////////////////
 
     return (
-        <div className="flex items-center gap-4 mb-2">
-            <p className="text-gray-500 text-sm">{distance}</p>
+        <div className="flex items-center gap-4 mb-2 text-gray-600 dark:text-gray-400">
+            <p className="text-sm">{distance}</p>
             {location &&
-                <p className="text-gray-500 text-xs">{location}</p>
+                <p className="text-xs">{location}</p>
             }
         </div>
     )

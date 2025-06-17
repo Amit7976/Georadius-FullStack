@@ -1,13 +1,17 @@
-import Image from 'next/image';
-import 'swiper/css';
+"use client";
+import { LoaderLink } from "@/src/components/loaderLinks";
+import { formatTimeAgo } from "@/src/helpers/formatTimeAgo";
+import { t } from "@/src/helpers/i18n";
+import Image from "next/image";
+import { useEffect, useState } from "react";
+import "swiper/css";
 import 'swiper/css/navigation';
 import 'swiper/css/pagination';
 import { Autoplay } from 'swiper/modules';
-import { Swiper, SwiperSlide } from 'swiper/react';
-import { formatTimeAgo } from '../helpers/formatTimeAgo';
-import { t } from '../helpers/i18n';
+import { Swiper, SwiperSlide } from "swiper/react";
 import { TrendingNewsPost } from '../helpers/types';
-import { LoaderLink } from './loaderLinks';
+import Post from "./Post";
+import { Drawer, DrawerTrigger } from "@/components/ui/drawer";
 
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -15,6 +19,42 @@ import { LoaderLink } from './loaderLinks';
 
 
 const TrendingNewsSlider = ({ trendingNews, loading }: { trendingNews: TrendingNewsPost[], loading: boolean }) => {
+    const [openDrawerId, setOpenDrawerId] = useState<string | null>(null);
+
+
+  
+
+    /////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    useEffect(() => {
+        const onPopState = () => {
+            if (openDrawerId) {
+                setOpenDrawerId(null);
+            }
+        };
+
+        window.addEventListener("popstate", onPopState);
+        return () => window.removeEventListener("popstate", onPopState);
+    }, [openDrawerId]);
+
+
+    /////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    const handleDrawerOpen = (postId: string) => {
+        history.pushState({ drawerOpen: true }, "", window.location.href);
+        setOpenDrawerId(postId);
+    };
+
+    /////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    const handleDrawerClose = () => {
+        setOpenDrawerId(null);
+        history.back();
+    };
+
+    /////////////////////////////////////////////////////////////////////////////////////////////////////
+
     if (loading) return (
         <div className='py-3 px-0'>
             <HeaderForTrendingNews />
@@ -29,9 +69,7 @@ const TrendingNewsSlider = ({ trendingNews, loading }: { trendingNews: TrendingN
             </div>
         </div>
     );
-
-    /////////////////////////////////////////////////////////////////////////////////////////////////////
-
+    
     return (
         <>
             <div className="py-3 px-0">
@@ -40,30 +78,41 @@ const TrendingNewsSlider = ({ trendingNews, loading }: { trendingNews: TrendingN
                     <Swiper spaceBetween={0} slidesPerView={1} parallax={true} modules={[Autoplay]}>
                         {trendingNews.map((news: TrendingNewsPost, index: number) => (
                             <SwiperSlide key={news._id || index}>
-                                <LoaderLink href={`/search/results/${news._id}`} className="w-full h-80 relative overflow-hidden text-start select-none bg-gray-100 dark:bg-neutral-800">
-                                    <Image loading="lazy"
-                                        src={news.image || '/default-image.jpg'}
-                                        alt={news.creatorName || ""}
-                                        width={600}
-                                        height={300}
-                                        className="w-full h-full object-cover object-center"
-                                    />
-                                    {/* Text Overlay */}
-                                    <div className="absolute bottom-0 space-y-3 py-4 w-full h-full bg-gradient-to-b to-[#00000090] px-3 flex flex-col justify-end text-white z-50">
-                                        <span className="text-xl font-bold">{news.title}</span>
-                                        <div className="flex items-center gap-4 flex-wrap">
-                                            <p className="text-green-500 text-sm font-semibold">
-                                                {news.distance}
-                                            </p>
-                                            <p className="font-bold text-gray-100 text-sm">
-                                                <span className='text-gray-300 font-normal'>by</span> {news?.creatorName || "Unknown"}
-                                            </p>
-                                            <p className="text-gray-400 text-xs font-medium">
-                                                {news.createdAt ? formatTimeAgo(news.createdAt) : "Just now"}
-                                            </p>
+                                {/* Post Drawer */}
+                                <Drawer open={openDrawerId === news._id} onOpenChange={(isOpen: boolean) => {
+                                    if (isOpen) handleDrawerOpen(news._id);
+                                    else handleDrawerClose();
+                                }}>
+                                    <DrawerTrigger asChild>
+                                        <div className="w-full h-80 relative overflow-hidden text-start select-none bg-gray-100 dark:bg-neutral-800 active:scale-95 duration-300">
+                                            <Image loading="lazy"
+                                                src={news.image || '/default-image.jpg'}
+                                                alt={news.creatorName || ""}
+                                                width={600}
+                                                height={300}
+                                                className="w-full h-full object-cover object-center"
+                                            />
+                                            {/* Text Overlay */}
+                                            <div className="absolute bottom-0 space-y-3 py-4 w-full h-full bg-gradient-to-b to-[#00000090] px-3 flex flex-col justify-end text-white z-50">
+                                                <span className="text-xl font-bold">{news.title}</span>
+                                                <div className="flex items-center gap-4 flex-wrap">
+                                                    <p className="text-green-500 text-sm font-semibold">
+                                                        {news.distance}
+                                                    </p>
+                                                    <p className="font-bold text-gray-100 text-sm">
+                                                        <span className='text-gray-300 font-normal'>by</span> {news?.creatorName || "Unknown"}
+                                                    </p>
+                                                    <p className="text-gray-400 text-xs font-medium">
+                                                        {news.createdAt ? formatTimeAgo(news.createdAt) : "Just now"}
+                                                    </p>
+                                                </div>
+                                            </div>
                                         </div>
-                                    </div>
-                                </LoaderLink>
+                                    </DrawerTrigger>
+                                    {openDrawerId === news._id && (
+                                        <Post postId={news._id} />
+                                    )}
+                                </Drawer>
                             </SwiperSlide>
                         ))}
                     </Swiper>

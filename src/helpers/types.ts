@@ -44,7 +44,7 @@ export interface MainContentProps {
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////
 
-export type Post = {
+export type PostType = {
   _id: string;
   title: string;
   location: string;

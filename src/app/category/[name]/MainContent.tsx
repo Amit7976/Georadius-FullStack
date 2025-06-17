@@ -1,4 +1,5 @@
 "use client";
+import { Drawer, DrawerTrigger } from "@/components/ui/drawer";
 import {
     Select,
     SelectContent,
@@ -7,15 +8,16 @@ import {
     SelectValue,
 } from "@/components/ui/select";
 import BackButton from "@/src/components/BackButton";
+import { PlaceholderSearchPost } from "@/src/components/home/Placeholder";
 import ImageSlider from "@/src/components/ImageSlider";
-import { LoaderLink } from "@/src/components/loaderLinks";
+import Post from "@/src/components/Post";
 import { formatTimeAgo } from "@/src/helpers/formatTimeAgo";
 import { t } from "@/src/helpers/i18n";
 import { useParams } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
+import "swiper/css";
 import { useGeolocation } from "../../hooks/useGeolocation";
-import { Post } from "@/src/helpers/types";
-import { PlaceholderSearchPost } from "@/src/components/home/Placeholder";
+import { PostType } from "@/src/helpers/types";
 
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -24,21 +26,22 @@ import { PlaceholderSearchPost } from "@/src/components/home/Placeholder";
 
 export default function MainContent() {
     const { name } = useParams();
-    const [posts, setPosts] = useState<Post[]>([]);
+    const [posts, setPosts] = useState<PostType[]>([]);
     const [radius, setRadius] = useState("10");
     const [loading, setLoading] = useState(false);
-    const [expandedDescriptions, setExpandedDescriptions] = useState<string[]>([]);
+    // const [expandedDescriptions, setExpandedDescriptions] = useState<string[]>([]);
     const location = useGeolocation();
+    const [openDrawerId, setOpenDrawerId] = useState<string | null>(null);
 
     /////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    const toggleDescription = (postId: string) => {
-        setExpandedDescriptions((prev) =>
-            prev.includes(postId)
-                ? prev.filter((id) => id !== postId)
-                : [...prev, postId]
-        );
-    };
+    // const toggleDescription = (postId: string) => {
+    //     setExpandedDescriptions((prev) =>
+    //         prev.includes(postId)
+    //             ? prev.filter((id) => id !== postId)
+    //             : [...prev, postId]
+    //     );
+    // };
 
     /////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -68,6 +71,35 @@ export default function MainContent() {
     }, [name, radius, fetchCategoryPosts]);
 
     /////////////////////////////////////////////////////////////////////////////////////////////////////
+    useEffect(() => {
+        const onPopState = () => {
+            if (openDrawerId) {
+                setOpenDrawerId(null);
+            }
+        };
+
+        window.addEventListener("popstate", onPopState);
+        return () => window.removeEventListener("popstate", onPopState);
+    }, [openDrawerId]);
+
+
+    /////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    const handleDrawerOpen = (postId: string) => {
+        history.pushState({ drawerOpen: true }, "", window.location.href);
+        setOpenDrawerId(postId);
+    };
+
+    /////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    const handleDrawerClose = () => {
+        setOpenDrawerId(null);
+        history.back();
+    };
+
+    /////////////////////////////////////////////////////////////////////////////////////////////////////
+
 
     return (
         <div className="py-4">
@@ -100,28 +132,31 @@ export default function MainContent() {
             ) : (
                 <div className="gap-4 flex flex-col px-4">
                     {posts.length > 0 ? (
-                        posts.map((post) => (
-                            <LoaderLink href={`/search/results/${post._id}`} key={post._id} className="py-2 space-y-2 text-start">
-                                <p className="text-gray-500 text-xs">{formatTimeAgo(post.updatedAt)}</p>
-                                <h4 className="font-semibold text-lg leading-5">{post.title}</h4>
-                                <p className="text-xs text-gray-500 leading-5 mt-1">{post.location}</p>
+                        posts.map((post, index) => (
+                            <Drawer key={index} Drawer open={openDrawerId === post._id} onOpenChange={(isOpen: boolean) => {
+                                if (isOpen) handleDrawerOpen(post._id);
+                                else handleDrawerClose();
+                            }}>
+                                <DrawerTrigger asChild>
+                                    <div key={post._id} className="py-2 space-y-2 text-start active:scale-95 duration-300">
+                                        <p className="text-gray-500 text-xs">{formatTimeAgo(post.updatedAt)}</p>
+                                        <p className="text-xs text-gray-500 leading-5 mt-1">{post.location}</p>
 
-                                {Array.isArray(post.images) && post.images.length > 0 && (
-                                    <div className="rounded-2xl overflow-hidden mt-4 my-2">
-                                        <ImageSlider images={post.images} height={250} />
+                                        {Array.isArray(post.images) && post.images.length > 0 && (
+                                            <div className="rounded-2xl overflow-hidden mt-4 my-2">
+                                                <ImageSlider images={post.images} height={250} />
+                                            </div>
+                                        )}
+
+                                        <div className="flex-6 mt-4">
+                                            <h4 className="font-semibold text-lg">{post.title}</h4>
+                                        </div>
                                     </div>
+                                </DrawerTrigger>
+                                {openDrawerId === post._id && (
+                                    <Post postId={post._id} />
                                 )}
-
-                                <div className="flex-6 mt-4">
-                                    <p
-                                        className={`border-l-4 border-green-500 pl-3 py-0.5 text-sm text-gray-800 dark:text-gray-400 ${expandedDescriptions.includes(post._id) ? "" : "line-clamp-6"
-                                            }`}
-                                        onClick={() => toggleDescription(post._id)}
-                                    >
-                                        {post.description}
-                                    </p>
-                                </div>
-                            </LoaderLink>
+                            </Drawer>
                         ))
                     ) : (
                         <div className="w-full h-screen flex items-center justify-center text-gray-400 font-medium text-lg">

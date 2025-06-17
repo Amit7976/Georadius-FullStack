@@ -4,29 +4,28 @@ import { useRouter } from "next/navigation";
 import { cn } from "@/lib/utils";
 import { createPortal } from "react-dom";
 
-
-//////////////////////////////////////////////////////////////////////////////////////////////////////////
-//////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-
 export function LoaderLink({
     href,
     className,
     children,
+    target,
 }: {
     href: string;
     className?: string;
+    target?: string;
     children: React.ReactNode;
 }) {
     const router = useRouter();
     const [progress, setProgress] = useState(0);
     const [isPending, startTransition] = useTransition();
 
-    //////////////////////////////////////////////////////////////////////////////////////////////////////////
-
     const handleClick = () => {
-        setProgress(20);
+        if (target && target !== "_self") {
+            window.open(href, target);
+            return;
+        }
 
+        setProgress(20);
         setTimeout(() => setProgress(60), 50);
         setTimeout(() => setProgress(95), 100);
 
@@ -34,8 +33,6 @@ export function LoaderLink({
             router.push(href);
         });
     };
-
-    //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     return (
         <button
@@ -47,7 +44,7 @@ export function LoaderLink({
         >
             {children}
 
-            {isPending && (
+            {isPending && !target && (
                 createPortal(
                     <div className="fixed top-0 left-0 w-full h-[3px] bg-transparent z-[9999]">
                         <div

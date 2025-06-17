@@ -1,11 +1,11 @@
 "use client";
 import { DialogTitle } from "@/components/ui/dialog";
-import { Drawer, DrawerContent, DrawerTitle, DrawerTrigger } from "@/components/ui/drawer";
+import { Drawer, DrawerContent, DrawerTrigger } from "@/components/ui/drawer";
 import DeleteButton from "@/src/components/DeleteButton";
 import HideButton from "@/src/components/HideButton";
 import { LoaderLink } from "@/src/components/loaderLinks";
+import Post from "@/src/components/Post";
 import QrButton from "@/src/components/QrButton";
-import VoteButtons from "@/src/components/VoteButtons";
 import { formatTimeAgo } from "@/src/helpers/formatTimeAgo";
 import { t } from "@/src/helpers/i18n";
 import { News } from "@/src/helpers/types";
@@ -79,38 +79,34 @@ export default function MainContent() {
 
     /////////////////////////////////////////////////////////////////////////////////////////////////////
 
+    useEffect(() => {
+        const onPopState = () => {
+            if (openDrawerId) {
+                setOpenDrawerId(null);
+            }
+        };
+
+        window.addEventListener("popstate", onPopState);
+        return () => window.removeEventListener("popstate", onPopState);
+    }, [openDrawerId]);
+
+
+    /////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
     const handleDrawerOpen = (postId: string) => {
+        history.pushState({ drawerOpen: true }, "", window.location.href);
         setOpenDrawerId(postId);
-        window.location.hash = postId;
     };
 
     /////////////////////////////////////////////////////////////////////////////////////////////////////
 
     const handleDrawerClose = () => {
         setOpenDrawerId(null);
-        history.pushState("", document.title, window.location.pathname + window.location.search);
+        history.back();
     };
 
     /////////////////////////////////////////////////////////////////////////////////////////////////////
-
-    useEffect(() => {
-        const onHashChange = () => {
-            if (!window.location.hash && openDrawerId) {
-                setOpenDrawerId(null);
-            }
-        };
-        window.addEventListener("hashchange", onHashChange);
-        return () => window.removeEventListener("hashchange", onHashChange);
-    }, [openDrawerId]);
-
-    /////////////////////////////////////////////////////////////////////////////////////////////////////
-
-    useEffect(() => {
-        if (window.location.hash) {
-            const hash = window.location.hash.replace("#", "");
-            setOpenDrawerId(hash);
-        }
-    }, []);
 
     /////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -199,31 +195,13 @@ export default function MainContent() {
                                             </div>
                                             <div className="bg-gradient-to-b from-transparent via-white to-white dark:via-neutral-900 dark:to-neutral-900 h-[10vh] w-full absolute bottom-0"></div>
                                             <p className="text-xl text-gray-400 font-medium mt-6 cursor-pointer pointer-events-auto">
-                                                {post.description.split(" ").slice(0, 20).join(" ")}
+                                                {post.description}
                                             </p>
                                         </div>
                                     </DrawerTrigger>
-                                    <DrawerContent className="p-0 pointer-events-auto h-screen data-[vaul-drawer-direction=bottom]:max-h-screen">
-                                        <div className="overflow-y-scroll py-20 px-4">
-                                            <span className="text-sm font-semibold text-gray-500">{formatTimeAgo(post.createdAt)}</span>
-                                            <DrawerTitle className="pt-4 text-2xl font-bold pr-10 capitalize">{post.title}</DrawerTitle>
-                                            <div className="flex items-center justify-between gap-3 w-full mt-6 mb-1">
-                                                <div className="flex items-center gap-2">
-                                                    <Image loading="lazy" src={post.creatorImage} alt={post.creatorName} width={40} height={40} className="rounded-full" />
-                                                    <span className="text-base font-semibold">{post.creatorName}</span>
-                                                </div>
-                                                <VoteButtons news={post} />
-                                            </div>
-                                            <div className="mt-8">
-                                                {post.latitude && post.longitude && (
-                                                    <GetDistance lat={post.latitude} lng={post.longitude} location={post.location} />
-                                                )}
-                                            </div>
-                                            <p className="text-xl text-gray-400 font-medium mt-5 cursor-pointer text-balance">
-                                                {post.description.split(" ").slice(0, 30).join(" ") + "..."}
-                                            </p>
-                                        </div>
-                                    </DrawerContent>
+                                    {openDrawerId === post._id && (
+                                        <Post postId={post._id} />
+                                    )}
                                 </Drawer>
                             </SwiperSlide>
                         )

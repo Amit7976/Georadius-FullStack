@@ -46,6 +46,7 @@ export default function CategoryTabs({ selectedCategory, setSelectedCategory, cu
                         newsData.map((news) => (
                             <div key={news._id} className="snap-start">
                                 <NewsPost news={news} currentLoginUsername={currentLoginUsername} onHide={handleHide} fullDescription={false} />
+                                
                             </div>
                         ))
                     ) : (

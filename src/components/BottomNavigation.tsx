@@ -72,7 +72,7 @@ export default function BottomNavigation({ username }: { username: string | bool
                 return (
                     <LoaderLink key={key} href={href} className="flex-1 active:bg-transparent">
                         <div
-                            className={`lg:p-1 p-2 active:bg-neutral-900 ${isActive ? "border-t-[3px] border-green-500" : "border-t-1 border-gray-200 dark:border-neutral-700"}`}>
+                            className={`lg:p-1 p-2 active:bg-neutral-100 dark:active:bg-neutral-900 duration-200 ${isActive ? "border-t-[3px] border-green-500" : "border-t-1 border-gray-200 dark:border-neutral-700"}`}>
                             <div className={`flex flex-col items-center ${isActive ? "pt-0" : "pt-0.5"}`}>
                                 {isActive ? (
                                     <Icon2 className="text-green-600 text-[5vw] sm:text-xl" />

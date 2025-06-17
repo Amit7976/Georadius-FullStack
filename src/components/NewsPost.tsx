@@ -23,6 +23,7 @@ import VoteButtons from "./VoteButtons";
 import { t } from "../helpers/i18n";
 import { DialogTitle } from "@/components/ui/dialog";
 import { CommentType, News } from "../helpers/types";
+import Post from "./Post";
 
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -41,7 +42,9 @@ const NewsPost = ({ news, onHide, fullDescription, currentLoginUsername }: { new
     // console.log("📰 News Post Data:", news);
 
     const [showAddress, setShowAddress] = useState(false);
-    const [showDescription, setShowDescription] = useState(fullDescription);
+    // const [showDescription, setShowDescription] = useState(fullDescription);
+    console.log(fullDescription);
+    
 
     /////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -69,26 +72,34 @@ const NewsPost = ({ news, onHide, fullDescription, currentLoginUsername }: { new
     /////////////////////////////////////////////////////////////////////////////////////////////////////
 
     useEffect(() => {
-        const onHashChange = () => {
-            if (!window.location.hash && openDrawerId) {
+        const onPopState = () => {
+            if (openDrawerId) {
                 setOpenDrawerId(null);
             }
         };
-        window.addEventListener("hashchange", onHashChange);
-        return () => window.removeEventListener("hashchange", onHashChange);
+
+        window.addEventListener("popstate", onPopState);
+        return () => window.removeEventListener("popstate", onPopState);
     }, [openDrawerId]);
 
-    /////////////////////////////////////////////////////////////////////////////////////////////////////
-
-    useEffect(() => {
-        // Restore state if someone lands on a hash
-        if (window.location.hash) {
-            const hash = window.location.hash.replace("#", "");
-            setOpenDrawerId(hash);
-        }
-    }, []);
 
     /////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    const handleDrawerOpen = (postId: string) => {
+        history.pushState({ drawerOpen: true }, "", window.location.href);
+        setOpenDrawerId(postId);
+    };
+
+    /////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    const handleDrawerClose = () => {
+        setOpenDrawerId(null);
+        history.back();
+    };
+
+    /////////////////////////////////////////////////////////////////////////////////////////////////////
+
 
     return (
         <div key={String(news._id)}>
@@ -107,6 +118,7 @@ const NewsPost = ({ news, onHide, fullDescription, currentLoginUsername }: { new
                             </div>
                             <div className="flex items-start gap-2 text-gray-600 dark:text-gray-400 text-xs">
                                 <span className="text-green-600 font-semibold">{distance}</span>
+
                                 <span
                                     className={`cursor-pointer ${showAddress ? "" : "line-clamp-1"}`}
                                     onClick={() => setShowAddress(!showAddress)}
@@ -167,31 +179,57 @@ const NewsPost = ({ news, onHide, fullDescription, currentLoginUsername }: { new
                     </Drawer>
                 </div>
 
-                {/* Image Slider */}
-                {news.images.length > 0 && <ImageSlider images={news.images} height={400} />}
 
-                {/* Title & Description */}
-                <LoaderLink href={`/search/results/${news._id}`} className="pl-1 text-start">
-                    {
-                        showDescription ? (
-                            <>
-                                <p className={`pl-2 pb-3 text-base font-medium text-gray-800 dark:text-gray-300`}>
-                                    {news.title}
-                                </p>
-                                <p className={`border-l-4 border-green-500 pl-3 py-2 text-sm font-medium text-gray-800 dark:text-gray-400 ${showDescription ? "" : "line-clamp-6"}`}
-                                    onClick={() => setShowDescription(!showDescription)}>
-                                    {news.description}
-                                </p>
-                            </>
-                        ) : (
-                            <>
-                                <p className={`border-l-4 border-green-500 pl-3 py-2 text-sm font-medium text-gray-800 dark:text-gray-400`}>
-                                    {news.title}
-                                </p>
-                            </>
-                        )
-                    }
-                </LoaderLink>
+                {/* Post Drawer */}
+                <Drawer open={openDrawerId === news._id} onOpenChange={(isOpen: boolean) => {
+                    if (isOpen) handleDrawerOpen(news._id);
+                    else handleDrawerClose();
+                }}>
+                    <DrawerTrigger asChild>
+                        <div className="active:scale-95 duration-300">
+                            {/* Image Slider */}
+                            {
+                                // !showDescription ? (
+                                <>
+                                    {news.images.length > 0 && <ImageSlider images={news.images} height={400} />}
+                                </>
+                                // ) : (
+                                //     <>
+                                //         <LoaderLink href={`/search/results/${news._id}`} className="pl-1 text-start">
+                                //             {news.images.length > 0 && <ImageSlider images={news.images} height={400} />}
+                                //         </LoaderLink>
+                                //     </>
+                                // )
+                            }
+
+                            {/* Title & Description */}
+                            <div className="pl-1 text-start">
+                                {/* {
+                                    showDescription ? (
+                                        <>
+                                            <p className={`pl-2 pb-3 text-base font-medium text-gray-800 dark:text-gray-300`}>
+                                                {news.title}
+                                            </p>
+                                            <p className={`border-l-4 border-green-500 pl-3 py-2 text-sm font-medium text-gray-800 dark:text-gray-400`}>
+                                                {news.description}
+                                            </p>
+                                        </>
+                                    ) : ( */}
+                                <>
+                                    <p className={`pl-2 pb-3 text-base font-medium text-gray-800 dark:text-gray-300`}>
+                                        {news.title}
+                                    </p>
+                                </>
+                                {/* )
+                                } */}
+                            </div>
+                        </div>
+                    </DrawerTrigger>
+                    {openDrawerId === news._id && (
+                        <Post postId={news._id} />
+                    )}
+                </Drawer>
+
 
                 {/* Footer */}
                 <div className="flex justify-between items-center px-4">
