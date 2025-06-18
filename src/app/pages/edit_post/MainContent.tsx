@@ -13,6 +13,7 @@ import DescriptionInput from "./components/DescriptionInput";
 import ImageUploader from "./components/ImageUploader";
 import LocationInput from "./components/LocationInput";
 import TitleInput from "./components/TitleInput";
+import axios from "axios";
 
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -53,24 +54,37 @@ export default function MainContent() {
     /////////////////////////////////////////////////////////////////////////////////////////////////////
 
     useEffect(() => {
-        const storedData = sessionStorage.getItem("editNewsData");
-        if (storedData) {
-            const parsedData = JSON.parse(storedData);
-            setPost(parsedData);
-            reset({
-                title: parsedData.title,
-                description: parsedData.description,
-                location: parsedData.location,
-                latitude: parsedData.latitude,
-                longitude: parsedData.longitude,
-                categories: parsedData.categories,
-                images: parsedData.images || [],
-                deletedImages: [],
-            });
-            setSelectedCategories(parsedData.categories || []);
-        } else {
-            console.warn("No edit data in sessionStorage. Consider fetching...");
-        }
+        const fetchEditPostData = async () => {
+
+            const postId = sessionStorage.getItem("editNewsId");
+
+            try {
+                const response = await axios.post("/api/post/getpostforedit", { postId });
+
+                if (response.data?.post) {
+                    const parsedData = response.data.post;
+
+                    setPost(parsedData);
+                    reset({
+                        title: parsedData.title,
+                        description: parsedData.description,
+                        location: parsedData.location,
+                        latitude: parsedData.latitude,
+                        longitude: parsedData.longitude,
+                        categories: parsedData.categories,
+                        images: parsedData.images || [],
+                        deletedImages: [],
+                    });
+                    setSelectedCategories(parsedData.categories || []);
+                } else {
+                    console.warn("⚠️ Post not found in response");
+                }
+            } catch (err) {
+                console.error("❌ Failed to fetch post for edit:", err);
+            }
+        };
+
+        fetchEditPostData();
     }, [reset]);
 
     /////////////////////////////////////////////////////////////////////////////////////////////////////

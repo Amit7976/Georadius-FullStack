@@ -150,7 +150,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
 
 
       <body className="antialiased relative bg-white dark:bg-neutral-900">
-        <div className="lg:hidden">
+        <div className="">
           <ThemeHandler>
             <main>
               {children}
@@ -159,9 +159,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             <Toaster richColors position="bottom-center" expand={false} className="w-40" />
           </ThemeHandler>
         </div>
-        <div className="hidden lg:flex items-center justify-center h-screen w-full dark:bg-neutral-900 px-10">
+        {/* <div className="hidden lg:flex items-center justify-center h-screen w-full dark:bg-neutral-900 px-10">
           <p className="max-w-lg mx-auto text-center">You&#39;re currently viewing the web version of the Geo Radius app. For the best experience, please use a mobile device.</p>
-        </div>
+        </div> */}
       </body>
 
       <GoogleAnalytics gaId="G-JLMGJ6PG9F" />

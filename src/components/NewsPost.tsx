@@ -65,8 +65,9 @@ const NewsPost = ({ news, onHide, fullDescription, currentLoginUsername }: { new
     /////////////////////////////////////////////////////////////////////////////////////////////////////
 
     const handleEditClick = () => {
-        // sessionStorage.setItem("editNewsData", JSON.stringify(news));
-        router.push(`/pages/edit_post/${news._id}`);
+        console.log("clcik");
+        sessionStorage.setItem("editNewsId", news._id);
+        router.push(`/pages/edit_post`);
     };
 
     /////////////////////////////////////////////////////////////////////////////////////////////////////
