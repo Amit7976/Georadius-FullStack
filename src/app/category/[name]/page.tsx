@@ -6,15 +6,18 @@ import MainContent from "./MainContent";
 /////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
-
 type Props = {
     params: Promise<{ name: string }>;
 };
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////
 
 export async function generateMetadata(props: Props): Promise<Metadata> {
     const rawCategory = await props.params || "Category";
     const decoded = decodeURIComponent(rawCategory.name).trim();
     const formatted = decoded.charAt(0).toUpperCase() + decoded.slice(1);
+
+    /////////////////////////////////////////////////////////////////////////////////////////////////////
 
     return {
         title: `${formatted} | Geo Radius News`,

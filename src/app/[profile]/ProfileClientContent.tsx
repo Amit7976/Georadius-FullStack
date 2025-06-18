@@ -125,6 +125,7 @@ function ProfileClientContent({ profile }: Props) {
         }
     }, [loading]);
 
+    /////////////////////////////////////////////////////////////////////////////////////////////////////
 
     if (userNotFound) {
         return (

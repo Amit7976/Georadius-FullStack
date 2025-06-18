@@ -116,7 +116,6 @@ export default function SearchResultsClient() {
 
     /////////////////////////////////////////////////////////////////////////////////////////////////////
 
-
     return (
         <div className="p-4">
             <SearchInput queryParam={query} />

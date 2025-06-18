@@ -71,6 +71,7 @@ export default function MainContent() {
     }, [name, radius, fetchCategoryPosts]);
 
     /////////////////////////////////////////////////////////////////////////////////////////////////////
+
     useEffect(() => {
         const onPopState = () => {
             if (openDrawerId) {
@@ -99,7 +100,6 @@ export default function MainContent() {
     };
 
     /////////////////////////////////////////////////////////////////////////////////////////////////////
-
 
     return (
         <div className="py-4">

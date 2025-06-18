@@ -4,10 +4,13 @@ import { auth } from "@/src/auth";
 import mongoose from "mongoose";
 import { connectToDatabase } from "@/src/lib/utils";
 
+
 /////////////////////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////////////////////
 
+
 export async function POST(req: Request) {
+
   // console.log("====================================");
   // console.log("======== Get Post For Edit =========");
   // console.log("====================================");
@@ -19,7 +22,7 @@ export async function POST(req: Request) {
 
     const session = await auth();
     const userId = session?.user?.id;
-    const currentLoginUsername = session?.user?.username;
+    // const currentLoginUsername = session?.user?.username;
 
     /////////////////////////////////////////////////////////////////////////////////////////////////////
 

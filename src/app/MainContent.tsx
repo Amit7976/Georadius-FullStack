@@ -114,7 +114,6 @@ export default function MainContent() {
 
     /////////////////////////////////////////////////////////////////////////////////////////////////////
 
-
     useEffect(() => {
         if (!loading) {
             const timer = setTimeout(() => setMounted(true), 10); // tiny delay to trigger animation

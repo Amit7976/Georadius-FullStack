@@ -134,7 +134,7 @@ const SignUpForm = () => {
                         className="bg-green-600 active:bg-green-500 duration-300 text-white text-lg font-bold py-2 px-4 rounded-md my-5 w-full h-16"
                         disabled={loading}
                     >
-                        {loading ? 'Loading...' : 'Sign Up'}
+                        {loading ? 'Submitting...' : 'Sign Up'}
                     </Button>
                     <p className="text-base text-gray-600 dark:text-gray-400 font-medium">
                         Already have an account?{" "}
