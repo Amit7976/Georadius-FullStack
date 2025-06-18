@@ -55,7 +55,7 @@ function MainContent() {
 
             const initMap = (latitude: number, longitude: number) => {
                 const myMap = olaMapsInstance.init({
-                    style: "https://api.olamaps.io/tiles/vector/v1/styles/default-dark-standard-mr/style.json",
+                    style: "https://api.olamaps.io/tiles/vector/v1/styles/default-light-standard-mr/style.json",
                     container: 'map',
                     center: [longitude, latitude],
                     zoom: 10,

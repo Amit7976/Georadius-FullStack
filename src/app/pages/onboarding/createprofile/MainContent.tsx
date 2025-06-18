@@ -193,7 +193,7 @@ export default function MainContent() {
                         {!imagePreview && (
                             <>
                                 <Image loading="lazy"
-                                    src={"/images/profileIcon/default.jpg"}
+                                    src={"/images/ProfileIcon/default.jpg"}
                                     alt="Preview"
                                     width={80}
                                     height={80}
