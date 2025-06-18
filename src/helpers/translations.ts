@@ -246,9 +246,9 @@ export const translations = {
     worldwide: ["Global", "विश्वभर"],
     breaking: ["Breaking", "ताज़ा"],
     news: ["News!", "खबर!"],
-    noBreakingNewsNearByYou: [
-      "No Breaking News NearBy You",
-      "आपके आस-पास कोई ताज़ा ख़बर नहीं मिली",
+    noBreakingNews: [
+      "No Breaking News",
+      "कोई ताज़ा ख़बर नहीं मिली",
     ],
     allCategories: ["All Categories", "सभी श्रेणियाँ"],
     searchPlaceholder: [

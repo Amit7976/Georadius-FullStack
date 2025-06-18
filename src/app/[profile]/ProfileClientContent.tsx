@@ -24,12 +24,14 @@ function ProfileClientContent({ profile }: Props) {
     const [newsData, setNewsData] = useState<News[] | null>(null);
     const [error, setError] = useState<string | null>(null);
     const [userNotFound, setUserNotFound] = useState(false);
+    const [loading, setLoading] = useState(true);
+    const [mounted, setMounted] = useState(false);
 
     /////////////////////////////////////////////////////////////////////////////////////////////////////
 
     useEffect(() => {
         if (!profile) return;
-
+        setLoading(true);
         /////////////////////////////////////////////////////////////////////////////////////////////////////
 
         fetch("/api/userProfile/username", {
@@ -39,7 +41,7 @@ function ProfileClientContent({ profile }: Props) {
         })
             .then(async (res) => res.json())
             .then((data) => {
-                
+
                 if (!Array.isArray(data.posts)) {
                     setUserNotFound(true);
                     return;
@@ -81,7 +83,11 @@ function ProfileClientContent({ profile }: Props) {
             .catch((err) => {
                 setError(err.message);
                 setUserNotFound(true);
-            });
+            })
+            .finally(() => {
+                setLoading(false);
+            })
+            ;
     }, [profile]);
 
     /////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -109,6 +115,16 @@ function ProfileClientContent({ profile }: Props) {
     };
 
     /////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    useEffect(() => {
+        if (!loading) {
+            const timer = setTimeout(() => setMounted(true), 10); // tiny delay to trigger animation
+            return () => clearTimeout(timer);
+        } else {
+            setMounted(false); // reset animation when reloading
+        }
+    }, [loading]);
+
 
     if (userNotFound) {
         return (
@@ -153,6 +169,7 @@ function ProfileClientContent({ profile }: Props) {
             handleHide={handleHide}
             currentLoginUsername={currentLoginUsername}
             userPosts={newsData}
+            mounted={mounted}
         />
     );
 }

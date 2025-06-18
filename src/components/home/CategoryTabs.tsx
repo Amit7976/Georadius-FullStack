@@ -3,13 +3,17 @@ import interestsList from "@/public/json/interestList.json";
 import { News } from "@/src/helpers/types";
 import NewsPost from "../NewsPost";
 import { PlaceholderPost } from "./Placeholder";
+// import { useEffect, useState } from "react";
 
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
-export default function CategoryTabs({ selectedCategory, setSelectedCategory, currentLoginUsername, categoriesRef, loading, newsData, handleHide }: { selectedCategory: string; setSelectedCategory: (category: string) => void;currentLoginUsername:string, categoriesRef: React.RefObject<HTMLDivElement | null>; loading: boolean; newsData: News[], handleHide: (id: string) => void }) {
+export default function CategoryTabs({ selectedCategory, mounted, setSelectedCategory, currentLoginUsername, categoriesRef, loading, newsData, handleHide }: { selectedCategory: string; mounted: boolean; setSelectedCategory: (category: string) => void; currentLoginUsername: string, categoriesRef: React.RefObject<HTMLDivElement | null>; loading: boolean; newsData: News[], handleHide: (id: string) => void }) {
+    
+    
+
     return (
         <>
             {/* Categories */}
@@ -44,9 +48,8 @@ export default function CategoryTabs({ selectedCategory, setSelectedCategory, cu
                 ) : (
                     newsData.length > 0 ? (
                         newsData.map((news) => (
-                            <div key={news._id} className="snap-start">
+                            <div key={news._id} className={`snap-start transition-opacity duration-1000 ease-in-out ${mounted ? "opacity-100" : "opacity-0"}`}>
                                 <NewsPost news={news} currentLoginUsername={currentLoginUsername} onHide={handleHide} fullDescription={false} />
-                                
                             </div>
                         ))
                     ) : (

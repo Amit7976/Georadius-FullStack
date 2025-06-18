@@ -40,6 +40,7 @@ export interface MainContentProps {
   userPosts: News[];
   handleHide: (postId: string) => void;
   currentLoginUsername: string;
+  mounted?: boolean;
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////

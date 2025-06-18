@@ -225,9 +225,9 @@ const NewsPost = ({ news, onHide, fullDescription, currentLoginUsername }: { new
                             </div>
                         </div>
                     </DrawerTrigger>
-                    {openDrawerId === news._id && (
+                    {/* {openDrawerId === news._id && ( */}
                         <Post postId={news._id} />
-                    )}
+                    {/* )} */}
                 </Drawer>
 
 

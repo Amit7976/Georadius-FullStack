@@ -17,7 +17,8 @@ export default function MainContent({
     userData,
     userPosts,
     currentLoginUsername,
-    handleHide
+    handleHide,
+    mounted
 }: MainContentProps) {
     return (
         <>
@@ -63,7 +64,7 @@ export default function MainContent({
             <ActionButtons currentUserProfile={userData.currentUserProfile} username={username} />
 
             {/* News Posts */}
-            <div className="py-6">
+            <div className={`snap-start transition-opacity duration-1000 ease-in-out py-6 ${mounted ? "opacity-100" : "opacity-0"}`}>
                 {userPosts.length > 0 ? (
                     userPosts.map((news) => (
                         <NewsPost

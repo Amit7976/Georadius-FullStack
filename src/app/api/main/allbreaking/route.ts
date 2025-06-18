@@ -3,7 +3,7 @@ import { connectToDatabase } from "@/src/lib/utils";
 // import { Comment } from "@/src/models/commentModel";
 import { Post } from "@/src/models/postModel";
 import { UserProfile } from "@/src/models/UserProfileModel";
-import { NextRequest, NextResponse } from "next/server";
+import { NextResponse } from "next/server";
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -12,7 +12,7 @@ export const dynamic = "force-dynamic";
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////
 
-export async function GET(req: NextRequest) {
+export async function GET() {
   // console.log("====================================");
   // console.log("========= Nearby Posts API =========");
   // console.log("====================================");
@@ -30,29 +30,7 @@ export async function GET(req: NextRequest) {
     // console.log("🔐 Authenticated User ID:", userId);
 
     /////////////////////////////////////////////////////////////////////////////////////////////////////
-
-    const { searchParams } = new URL(req.url);
-    const lat = parseFloat(searchParams.get("lat") || "");
-    const lng = parseFloat(searchParams.get("lng") || "");
-    const range = parseInt(searchParams.get("range") || "50");
-    const limit = parseInt(searchParams.get("limit") || "5");
-    const images = parseInt(searchParams.get("images") || "1");
-
-    /////////////////////////////////////////////////////////////////////////////////////////////////////
-
-    if (isNaN(lat) || isNaN(lng)) {
-      // console.log("⚠️ Invalid latitude or longitude provided");
-      return NextResponse.json(
-        { error: "Latitude and Longitude are required" },
-        { status: 400 }
-      );
-    }
-
-    // console.log("📍 Coordinates:", { lat, lng });
-    // console.log("📏 Range:", range);
-
-    /////////////////////////////////////////////////////////////////////////////////////////////////////
-
+  
     interface ProfileData {
       saved: string[];
     }
@@ -73,34 +51,14 @@ export async function GET(req: NextRequest) {
 
     /////////////////////////////////////////////////////////////////////////////////////////////////////
 
+    const twoDaysAgo = new Date();
+    twoDaysAgo.setDate(twoDaysAgo.getDate() - 2);
+
     // console.log("➡️ Fetching posts...");
     const posts = await Post.aggregate([
       {
         $match: {
-          $expr: {
-            $and: [
-              {
-                $cond: {
-                  if: { $eq: [images, 1] },
-                  then: { $gt: [{ $size: "$images" }, 0] },
-                  else: { $literal: true },
-                },
-              },
-              {
-                $lte: [
-                  {
-                    $sqrt: {
-                      $add: [
-                        { $pow: [{ $subtract: ["$latitude", lat] }, 2] },
-                        { $pow: [{ $subtract: ["$longitude", lng] }, 2] },
-                      ],
-                    },
-                  },
-                  range / 100,
-                ],
-              },
-            ],
-          },
+          createdAt: { $gte: twoDaysAgo },
         },
       },
       {
@@ -114,7 +72,7 @@ export async function GET(req: NextRequest) {
       },
       {
         $sort: {
-          voteScore: -1, // descending order: 100, 50, 0, -50, -100
+          voteScore: -1,
         },
       },
       {
@@ -122,7 +80,6 @@ export async function GET(req: NextRequest) {
           _id: 1,
           title: 1,
           userId: 1,
-          description: 1,
           location: 1,
           longitude: 1,
           latitude: 1,
@@ -140,7 +97,7 @@ export async function GET(req: NextRequest) {
         },
       },
       {
-        $limit: limit,
+        $limit: 20,
       },
     ]);
 

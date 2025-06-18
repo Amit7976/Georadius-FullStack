@@ -74,7 +74,7 @@ export async function GET(req: NextRequest) {
           _id: 1,
           title: 1,
           userId: 1,
-          description: 1,
+          description: { $substrCP: ["$description", 0, 250] },
           categories: 1,
           creatorName: 1,
           creatorImage: 1,

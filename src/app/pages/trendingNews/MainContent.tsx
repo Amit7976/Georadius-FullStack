@@ -1,7 +1,7 @@
 "use client";
 import NewsPost from '@/src/components/NewsPost';
 import { useEffect, useState } from 'react';
-import { useGeolocation } from '../../hooks/useGeolocation';
+// import { useGeolocation } from '../../hooks/useGeolocation';
 import { t } from '@/src/helpers/i18n';
 import BackButton from '@/src/components/BackButton';
 import { News } from '@/src/helpers/types';
@@ -17,17 +17,17 @@ function MainContent() {
     const [currentLoginUsername, setCurrentLoginUsername] = useState("");
     const [error, setError] = useState<string | null>(null);
     const [loading, setLoading] = useState(false);
-    const location = useGeolocation();
+    // const location = useGeolocation();
 
     /////////////////////////////////////////////////////////////////////////////////////////////////////
 
     useEffect(() => {
-        const fetchNearbyPosts = async (latitude: number, longitude: number) => {
+        const fetchNearbyPosts = async () => {
             setLoading(true);
             try {
                 const hiddenPosts: string[] = JSON.parse(localStorage.getItem("hideNews") || "[]");
 
-                const res = await fetch(`/api/main/nearby?lat=${latitude}&lng=${longitude}&range=7000&limit=20&images=0`);
+                const res = await fetch(`/api/main/allbreaking`);
                 const data = await res.json();
                 if (data?.posts) {
                     const filteredNews: News[] = data.posts.filter((news: News) => !hiddenPosts.includes(news._id));
@@ -42,7 +42,7 @@ function MainContent() {
             }
         };
 
-        fetchNearbyPosts(location.lat, location.lng);
+        fetchNearbyPosts();
     }, []);
     
     /////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -68,7 +68,7 @@ function MainContent() {
     if (!data || data.length === 0) return (
         <>
             <div className="h-screen w-full flex items-center justify-center">
-                <p className='text-xl font-medium text-gray-500'>{t("noBreakingNewsNearByYou")}</p>
+                <p className='text-xl font-medium text-gray-500'>{t("noBreakingNews")}</p>
             </div>
         </>
     );

@@ -9,20 +9,55 @@ import 'swiper/css/navigation';
 import 'swiper/css/pagination';
 import { Autoplay } from 'swiper/modules';
 import { Swiper, SwiperSlide } from "swiper/react";
-import { TrendingNewsPost } from '../helpers/types';
+// import { News, TrendingNewsPost } from '../helpers/types';
 import Post from "./Post";
 import { Drawer, DrawerTrigger } from "@/components/ui/drawer";
+// import { useGeolocation } from "../app/hooks/useGeolocation";
 
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////////////////////
 
+type Breaking = {
+    _id: string,
+    title: string,
+    longitude: number,
+    latitude: number,
+    image: string,
+    creatorName: string,
+    createdAt: string,
+}
 
-const TrendingNewsSlider = ({ trendingNews, loading }: { trendingNews: TrendingNewsPost[], loading: boolean }) => {
+const TrendingNewsSlider = () => {
     const [openDrawerId, setOpenDrawerId] = useState<string | null>(null);
+    const [data, setData] = useState<Breaking[]>([]);
+    const [error, setError] = useState<string | null>(null);
+    const [loading, setLoading] = useState(false);
 
+    /////////////////////////////////////////////////////////////////////////////////////////////////////
 
-  
+    useEffect(() => {
+        const fetchBreakingPosts = async () => {
+            setLoading(true);
+            try {
+                const hiddenPosts: string[] = JSON.parse(localStorage.getItem("hideNews") || "[]");
+
+                const res = await fetch(`/api/main/breaking`);
+                const data = await res.json();
+                if (data?.posts) {
+                    const filteredNews: Breaking[] = data.posts.filter((news: Breaking) => !hiddenPosts.includes(news._id));
+                    setData(filteredNews);
+                }
+            } catch (err) {
+                console.error("API fetch error:", err);
+                setError(t("failedToFetchNearbyPosts"));
+            } finally {
+                setLoading(false);
+            }
+        };
+        fetchBreakingPosts();
+    }, []);
+
 
     /////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -55,6 +90,13 @@ const TrendingNewsSlider = ({ trendingNews, loading }: { trendingNews: TrendingN
 
     /////////////////////////////////////////////////////////////////////////////////////////////////////
 
+    /////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    if (error) return <p className="text-red-500 text-center">{error}</p>;
+
+    /////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
     if (loading) return (
         <div className='py-3 px-0'>
             <HeaderForTrendingNews />
@@ -69,14 +111,14 @@ const TrendingNewsSlider = ({ trendingNews, loading }: { trendingNews: TrendingN
             </div>
         </div>
     );
-    
+
     return (
         <>
             <div className="py-3 px-0">
                 <HeaderForTrendingNews />
                 <div className="py-2 pr-0">
                     <Swiper spaceBetween={0} slidesPerView={1} parallax={true} modules={[Autoplay]}>
-                        {trendingNews.map((news: TrendingNewsPost, index: number) => (
+                        {data.map((news, index: number) => (
                             <SwiperSlide key={news._id || index}>
                                 {/* Post Drawer */}
                                 <Drawer open={openDrawerId === news._id} onOpenChange={(isOpen: boolean) => {
@@ -96,9 +138,6 @@ const TrendingNewsSlider = ({ trendingNews, loading }: { trendingNews: TrendingN
                                             <div className="absolute bottom-0 space-y-3 py-4 w-full h-full bg-gradient-to-b to-[#00000090] px-3 flex flex-col justify-end text-white z-50">
                                                 <span className="text-xl font-bold">{news.title}</span>
                                                 <div className="flex items-center gap-4 flex-wrap">
-                                                    <p className="text-green-500 text-sm font-semibold">
-                                                        {news.distance}
-                                                    </p>
                                                     <p className="font-bold text-gray-100 text-sm">
                                                         <span className='text-gray-300 font-normal'>by</span> {news?.creatorName || "Unknown"}
                                                     </p>
@@ -109,9 +148,9 @@ const TrendingNewsSlider = ({ trendingNews, loading }: { trendingNews: TrendingN
                                             </div>
                                         </div>
                                     </DrawerTrigger>
-                                    {openDrawerId === news._id && (
-                                        <Post postId={news._id} />
-                                    )}
+                                    {/* {openDrawerId === news._id && ( */}
+                                    <Post postId={news._id} />
+                                    {/* )} */}
                                 </Drawer>
                             </SwiperSlide>
                         ))}
