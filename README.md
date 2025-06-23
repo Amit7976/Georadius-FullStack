@@ -75,4 +75,3 @@ Created with ❤️ by Amit
 
 - Replace `your-email@example.com`, GitHub link, and LinkedIn with your actual info.
 - I can also generate a custom `LICENSE` file with the **"No License / All Rights Reserved"** format if you'd like.
-  
