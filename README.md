@@ -4,7 +4,7 @@
 
 ---
 
-### Live Link: [https://georadiusnews.vercel.app/]
+### Live Link: https://georadiusnews.vercel.app/
 
 ---
 
